@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>New Tweet</title>
+
+  <!-- Local Bootstrap CSS -->
+  <link rel="stylesheet" href="{% static 'tweets/css/bootstrap.min.css' %}">
+
+  <style>
+    :root{ --panel:#a9b5cc; --bg:#e9eef6; --card:#ffffff; --text:#2b2b2b; --muted:#6b7280; --btn:#5b86e5; }
+    *{box-sizing:border-box}
+    body{ margin:0; padding:40px; background:var(--bg); font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif; color:var(--text); }
+    .compose-wrap{ width:min(680px,95vw); margin:auto; border-radius:14px; box-shadow:0 12px 30px rgba(0,0,0,.08); overflow:hidden; }
+    .compose-head{ background:var(--panel); color:#fff; padding:12px 16px; font-weight:600; letter-spacing:.2px; }
+    .compose-body{ background:var(--card); padding:16px; min-height:260px; }
+    .compose-body textarea{ width:100%; min-height:160px; border:none; outline:none; resize:vertical; font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif; }
+    .helper{ margin-top:8px; font-size:12px; color:var(--muted); }
+    .errors{ color:#b91c1c; font-size:13px; margin-bottom:6px; }
+    .compose-foot{ background:var(--panel); padding:10px 12px; display:flex; align-items:center; gap:12px; }
+    .spacer{ flex:1 }
+    .send-btn{ background:var(--btn); color:#fff; border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-weight:600; }
+    .send-btn:disabled{ opacity:.6; cursor:not-allowed }
+    /* Hide native file input, trigger by label */
+    #id_image{ display:none; }
+    .file-label{ color:#fff; cursor:pointer; padding:6px 8px; border-radius:6px; font-weight:500; font-size:14px; }
+    .file-label:hover{ background:rgba(255,255,255,0.18); }
+    .filename{ color:#eef2ff; font-size:12px; margin-left:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:260px; }
+    a.back{ display:inline-block; margin:14px auto; text-align:center; color:#4b5563; text-decoration:none; }
+    a.back:hover{ text-decoration:underline; }
+  </style>
+</head>
+<body>
+  <div class="compose-wrap">
+    <div class="compose-head">New Tweet</div>
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="compose-body">
+        {% if form.non_field_errors %}<div class="errors">{{ form.non_field_errors }}</div>{% endif %}
+        {% if form.content.errors %}<div class="errors">{{ form.content.errors }}</div>{% endif %}
+        {{ form.content }}
+        <div class="helper">Max 280 characters. Offensive words are blocked.</div>
+      </div>
+
+      <div class="compose-foot">
+        <!-- Image attach: hidden input + clickable text label -->
+        <label for="id_image" class="file-label" title="Attach image">Add image</label>
+        {{ form.image.errors }}
+        {{ form.image }}
+        <span id="fileName" class="filename"></span>
+
+        <div class="spacer"></div>
+        <button type="submit" class="send-btn">Send</button>
+      </div>
+    </form>
+  </div>
+
+  <a class="back" href="{% url 'tweet_list' %}">← Back to timeline</a>
+
+  <!-- Local Bootstrap JS -->
+  <script src="{% static 'tweets/js/bootstrap.bundle.min.js' %}"></script>
+
+  <script>
+    const fileInput = document.getElementById('id_image');
+    const fileName = document.getElementById('fileName');
+    if (fileInput) {
+      fileInput.addEventListener('change', () => {
+        fileName.textContent = fileInput.files.length ? fileInput.files[0].name : '';
+      });
+    }
+  </script>
+</body>
+</html>

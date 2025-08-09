@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Timeline</title>
+
+  <!-- Local Bootstrap CSS -->
+  <link rel="stylesheet" href="{% static 'tweets/css/bootstrap.min.css' %}">
+
+  <style>
+    :root{ --panel:#a9b5cc; --bg:#e9eef6; --card:#ffffff; --text:#2b2b2b; --muted:#6b7280; --link:#5b86e5; }
+    *{ box-sizing:border-box }
+    body{
+      margin:0; padding:40px;
+      background:var(--bg);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      color:var(--text);
+    }
+    .wrap{ width:min(680px,95vw); margin:0 auto; }
+    .topbar{
+      background:var(--panel); color:#fff;
+      padding:12px 16px; border-radius:14px; box-shadow:0 12px 30px rgba(0,0,0,.08);
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:18px;
+    }
+    .topbar h1{ margin:0; font-size:18px; letter-spacing:.2px; }
+    .new-btn{
+      background:#5b86e5; color:#fff; text-decoration:none;
+      padding:8px 12px; border-radius:10px; font-weight:600;
+    }
+    .feed{ display:flex; flex-direction:column; gap:12px; }
+    .tweet{
+      background:var(--card); border-radius:14px; padding:14px 16px;
+      box-shadow:0 6px 18px rgba(0,0,0,.06);
+    }
+    .meta{ display:flex; gap:8px; align-items:center; margin-bottom:6px; color:var(--muted); font-size:13px; }
+    .avatar{
+      width:34px; height:34px; border-radius:50%; background:#c7d2fe; display:flex; align-items:center; justify-content:center;
+      font-weight:700; color:#1f2937;
+    }
+    .user{ font-weight:700; color:#111827; }
+    .time{ color:var(--muted); }
+    .content{ font-size:15.5px; line-height:1.55; white-space:pre-wrap; margin:6px 0 8px; }
+    .imgwrap img{ max-width:100%; height:auto; border-radius:12px; }
+    .empty{ color:var(--muted); text-align:center; padding:40px 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>Timeline</h1>
+      <a class="new-btn" href="{% url 'tweet_create' %}">+ New Tweet</a>
+    </div>
+
+    <div class="feed">
+      {% for t in tweets %}
+        <article class="tweet">
+          <div class="meta">
+            <div class="avatar">{{ t.user.username|default:"U"|slice:":1"|upper }}</div>
+            <div class="user">{{ t.user.username|default:"unknown" }}</div>
+            <span class="time">· {{ t.created_at|date:"Y-m-d H:i" }}</span>
+          </div>
+
+          <div class="content">{{ t.content }}</div>
+
+          {% if t.image %}
+            <div class="imgwrap">
+              <img src="{{ t.image.url }}" alt="tweet image">
+            </div>
+          {% endif %}
+        </article>
+      {% empty %}
+        <p class="empty">No tweets yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Local Bootstrap JS -->
+  <script src="{% static 'tweets/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
